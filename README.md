@@ -121,4 +121,3 @@ This project is deployed using Netlify with:
 
 - **Frontend**: React app hosted as a static site
 - **Backend**: Serverless Functions (Netlify Functions) for ticket validation and email handling
-- 
