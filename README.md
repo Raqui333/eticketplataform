@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # E-Ticket Platform
 
 **E-Ticket Platform** is a modern and simple web application that allows users to register for a event and automatically receive a personalized **e-ticket in PDF format** via email — complete with event details, QR code, and validation system for event organizers.
@@ -121,3 +122,7 @@ This project is deployed using Netlify with:
 
 - **Frontend**: React app hosted as a static site
 - **Backend**: Serverless Functions (Netlify Functions) for ticket validation and email handling
+=======
+# eticketplataform
+A e-ticket web platform for generating, managing, and verifying digital tickets — designed for private events, internal systems, or controlled access scenarios. No payment or selling features involved.
+>>>>>>> 0af9fa7790207e318232c2b7e5227d022b89b479
