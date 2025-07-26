@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fs from 'fs';
+import path from 'path';
 import QRCode from 'qrcode';
 
 function base64ToUint8Array(base64) {
@@ -12,11 +13,14 @@ async function createQRCode(text) {
   return base64ToUint8Array(qrcode.split(',')[1]);
 }
 
+const bannerPath = path.join(__dirname, 'assets', 'banner.png');
+const logoPath = path.join(__dirname, 'assets', 'watermark.png');
+
 async function createPDF(name, email, date, code) {
   const image = await createQRCode(code);
 
-  const banner = fs.readFileSync('./public/banner.png');
-  const logo = fs.readFileSync('./public/watermark.png');
+  const banner = fs.readFileSync(bannerPath);
+  const logo = fs.readFileSync(logoPath);
 
   // Create a new PDFDocument
   const pdfDoc = await PDFDocument.create();
