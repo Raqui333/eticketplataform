@@ -1,5 +1,5 @@
-const LOGIN = process.env.LOGIN;
-const PASSW = process.env.PASSW;
+const LOGIN = process.env.LOGIN || 'admin';
+const PASSW = process.env.PASSW || 'admin';
 
 export default async (request) => {
   const data = await request.json();

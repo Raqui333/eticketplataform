@@ -1,11 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fs from 'fs';
 import QRCode from 'qrcode';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-resend.apiKeys.create({ name: 'Production' });
 
 function base64ToUint8Array(base64) {
   const buffer = Buffer.from(base64, 'base64');
@@ -135,38 +130,6 @@ async function createPDF(name, email, date, code) {
   return await pdfDoc.save();
 }
 
-async function sendEmail(recipient, pdfFile, date, name) {
-  const mailBody = `
-    Olá, ${name}!<br><br>
-
-    Parabéns! Sua inscrição foi confirmada com sucesso, e você já está com presença garantida no nosso evento <strong>Festival de Verão</strong>.<br><br>
-
-    🗓️ Data: ${new Date(date + 'T00:00:00-03:00').toLocaleDateString('pt-BR')}<br>
-    📍 Local: Avenida Senador Teotônio Vilela, 261, São Paulo, 04795-000<br>
-    ⏰ Horário: 19h00<br><br>
-
-    Seu ticket de entrada está anexado à este e-mail. Guarde com carinho e apresente-o na entrada do evento, impresso ou direto do celular.
-  `;
-  const { data, error } = await resend.emails.send({
-    from: 'Equipe Festival de Verão <no-reply@festivaldeverao.com>',
-    to: [recipient],
-    subject: 'TICKET FESTIVAL DE VERÃO',
-    html: mailBody,
-    attachments: [
-      {
-        content: Buffer.from(pdfFile),
-        filename: 'ticket_festival_de_verao.pdf',
-      },
-    ],
-  });
-
-  if (error) {
-    return console.error({ error });
-  }
-
-  console.log({ data });
-}
-
 export default async (request) => {
   const data = await request.json();
 
@@ -178,17 +141,11 @@ export default async (request) => {
 
   const pdfBytes = await createPDF(data.name, data.email, data.date, data.code);
 
-  try {
-    await sendEmail(data.email, pdfBytes, data.date, data.name);
-  } catch (err) {
-    return new Response(JSON.stringify('Server error'), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  return new Response(JSON.stringify('successfully'), {
+  return new Response(pdfBytes, {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="eticket.pdf"',
+    },
   });
 };

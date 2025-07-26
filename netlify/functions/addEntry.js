@@ -1,6 +1,3 @@
-const DATABASE_URL = process.env.DATABASE_URL;
-const DATABASE_KEY = process.env.DATABASE_KEY;
-
 function generateCode() {
   function randomHexBlock() {
     // generate a random 16 bits number and converts to 4 digits hex code
@@ -19,29 +16,12 @@ export default async (request) => {
   const randomcode = generateCode();
 
   try {
-    const resp = await fetch(DATABASE_URL, {
-      method: 'POST',
-      headers: {
-        apiKey: DATABASE_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: data.nomeCompleto,
-        date: data.dataEvento,
-        cpf: data.cpf,
-        email: data.email,
-        phone: data.telefone,
-        codehex: randomcode,
-      }),
-    });
-
-    if (!resp.ok) {
-      const response_data = await resp.json();
-      if (response_data.message.includes('duplicate key')) {
+    data.db.find((entry) => {
+      if (entry.cpf === data.entry.cpf) {
         error_msg = 'Esse CPF já foi utilizado!';
         throw new Error(error_msg);
       }
-    }
+    });
   } catch (err) {
     const resp_body = {
       message: 'an error has occurred',

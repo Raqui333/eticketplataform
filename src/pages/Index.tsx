@@ -9,7 +9,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative container mx-auto px-4 text-center text-white">
           <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in">
-            Festival de Verão 2025
+            Festival de Verão 2025 (DEMO)
           </h1>
           <p className="text-xl md:text-2xl mb-6 opacity-90">
             25, 26 e 27 de Julho • 3 Dias de Música Inesquecível

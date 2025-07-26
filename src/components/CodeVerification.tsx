@@ -13,9 +13,9 @@ const CodeVerification = () => {
     isValid: boolean;
     message: string;
     participantInfo?: {
-      name: string;
+      nomeCompleto: string;
       email: string;
-      date: string;
+      dataEvento: string;
     };
   } | null>(null);
   const { toast } = useToast();
@@ -37,11 +37,14 @@ const CodeVerification = () => {
     setIsVerifying(true);
 
     try {
+      const db = JSON.parse(localStorage.getItem('db') || '[]');
+
       const resp = await fetch('/.netlify/functions/verifyCode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: codeToUse.toLocaleLowerCase(),
+          db, // Use localStorage for demo purposes
         }),
       });
 
@@ -84,8 +87,11 @@ const CodeVerification = () => {
       });
       toast({
         title: 'Código válido!',
-        description: `Participante: ${participantInfo.name}`,
+        description: `Participante: ${participantInfo.nomeCompleto}`,
       });
+
+      db.find((info) => info.codehex === codeToUse).used = true;
+      localStorage.setItem('db', JSON.stringify(db));
     } catch (err) {
       toast({
         title: 'Erro ao processar inscrição',
@@ -235,7 +241,7 @@ const CodeVerification = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <p>
                     <span className="font-medium">Nome:</span>{' '}
-                    {verificationResult.participantInfo.name}
+                    {verificationResult.participantInfo.nomeCompleto}
                   </p>
                   <p>
                     <span className="font-medium">Email:</span>{' '}
@@ -243,7 +249,7 @@ const CodeVerification = () => {
                   </p>
                   <p>
                     <span className="font-medium">Dia do evento:</span>{' '}
-                    {verificationResult.participantInfo.date}
+                    {verificationResult.participantInfo.dataEvento}
                   </p>
                 </div>
               </div>

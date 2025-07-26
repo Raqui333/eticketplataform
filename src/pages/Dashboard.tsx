@@ -21,6 +21,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-center min-h-[80vh]">
             <div className="w-full max-w-md bg-white pt-5 rounded-lg">
               <div className="text-center">
+                <span>(DEMO) login: admin, password: admin</span>
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Painel de Controle
                 </h1>

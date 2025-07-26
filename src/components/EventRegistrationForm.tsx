@@ -42,8 +42,9 @@ const EventRegistrationForm = () => {
 
   const fetchVagas = async () => {
     const resp = await fetch('/.netlify/functions/fetchSpots', {
-      method: 'GET',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      body: localStorage.getItem('db') || '[]',
     });
 
     const vagas = await resp.json();
@@ -91,16 +92,18 @@ const EventRegistrationForm = () => {
     return value;
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data) => {
     setIsSubmitting(true);
 
     let error_msg = 'Tente novamente em alguns instantes.';
 
     try {
+      const db = JSON.parse(localStorage.getItem('db') || '[]');
+
       const resp = await fetch('/.netlify/functions/addEntry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ entry: data, db }),
       });
 
       if (!resp.ok) {
@@ -113,7 +116,12 @@ const EventRegistrationForm = () => {
 
       const rdata = await resp.json();
 
-      await fetch('/.netlify/functions/sendTicket', {
+      data.codehex = rdata.codehex;
+      db.push(data);
+
+      localStorage.setItem('db', JSON.stringify(db));
+
+      const response = await fetch('/.netlify/functions/sendTicket', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -121,8 +129,19 @@ const EventRegistrationForm = () => {
           name: data.nomeCompleto,
           date: data.dataEvento,
           code: rdata.codehex,
+          used: false,
         }),
       });
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'eticket.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
 
       toast({
         title: 'Inscrição realizada com sucesso!',
@@ -332,6 +351,13 @@ const EventRegistrationForm = () => {
               {isSubmitting ? 'Processando...' : 'Confirmar Inscrição'}
             </Button>
           </form>
+          <div className="text-center my-2">
+            (Nesse DEMO o pdf será baixado para o seu dispositivo) <br />
+            Você pode válidar o ticket no{' '}
+            <a href="/painel" className="text-blue-500 hover:underline">
+              PAINEL
+            </a>
+          </div>
         </CardContent>
       </Card>
     </div>
